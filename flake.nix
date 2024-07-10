@@ -8,20 +8,34 @@
     home-manager-unstable.url = "github:nix-community/home-manager/master";
     home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs";
 
-    home-manager-stable.url = "github:nix-community/home-manager/relase-24.05";
+    home-manager-stable.url = "github:nix-community/home-manager/release-24.05";
     home-manager-stable.inputs.nixpkgs.follows = "nixpkgs-stable";
+    
+    rust-overlay.url = "github:oxalica/rust-overlay";
+  };
 
-  }
-
-  outputs = inputs@{self,...}:
+  outputs = inputs@{self, nixpkgs, nixpkgs-stable, ...}:
     let
-      system = "x86_64-linux";
-    in {
-      nixosConfigurations = {
-        system = inputs.lib.nixosSystem {
-           inherit system;
-           modules = [./configuration.nix];
+      pkgs = import nixpkgs {
+        system = "x86_64-linux";
+        config= {
+          allowUnfree = true;
+          allowUnfreePredicate = (_:true);
+        };
+        overlays = [inputs.rust-overlay.overlays.default];
+      };
+      lib = nixpkgs.lib;
+    in
+  {
+    nixosConfigurations = {
+      carbon = lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [./configuration.nix];
+        specialArgs = {
+          inherit pkgs;
+          inherit inputs;
         };
       };
     };
+  };
 }

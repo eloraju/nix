@@ -3,15 +3,21 @@
 # and in the NixOS manual (accessible by running `nixos-help`).
 
 { config, pkgs, ... }:
-let
-  unstable = import <nixos-unstable> {};
-in
  {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       #<home-manager/nixos>
     ];
+
+  # Make sure flakes are enabled
+  nix.package = pkgs.nixFlakes;
+  nix.extraOptions = ''
+    experimental-features = nix-command flakes
+  '';
+
+  # Enable non-free (as in closed source) packages
+  nixpkgs.config.allowUnfree = true;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -38,25 +44,25 @@ in
 
   # Configure services
   services = {
-  # Enable the OpenSSH daemon.
-  openssh.enable = true;
+    # Enable the OpenSSH daemon.
+    openssh.enable = true;
 
-  # Enable CUPS to print documents.
-  printing.enable = true;
+    # Enable CUPS to print documents.
+    printing.enable = true;
 
-  # Enable bluetooth service
-  blueman.enable = true;
+    # Enable bluetooth service
+    blueman.enable = true;
 
-  # Enable Upower
-  upower.enable = true;
+    # Enable Upower
+    upower.enable = true;
 
-  # Enable and configure X11
+    # Enable and configure X11
     xserver = {
       enable = true;
       xkb = {
-      	options = "eurosign:e,ctrl:nocaps";
-	layout = "fi";
-	};
+        options = "eurosign:e,ctrl:nocaps";
+	      layout = "fi";
+	    };
 
       displayManager = {
         lightdm = {
@@ -87,7 +93,7 @@ in
 #      };
 #    };
 
-    # Enable touchpad support (enabled default in most desktopManager).
+    # Enable touchpad support (enabled by default in most desktopManagers).
     libinput.enable = true;
     
   };
@@ -111,9 +117,6 @@ in
   };
 
 
-  # Enable non-free (as in closed source) packages
-  nixpkgs.config.allowUnfree = true;
-
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.juuso = {
     isNormalUser = true;
@@ -121,8 +124,9 @@ in
     # Enable ‘sudo’ for the user.
     "wheel"
     "docker"
+    "networkmanager"
     ];
-    shell = pkgs.zsh
+    shell = pkgs.zsh;
    # User spesific packages
    # packages = with pkgs; [
    # ];
@@ -157,12 +161,15 @@ in
     stow
     fzf
     fd
-    unstable.oh-my-posh
+    oh-my-posh
   ];
 
+  users.defaultUserShell = pkgs.zsh;
+  environment.shells = with pkgs; [ zsh ];
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   programs = {
+    zsh.enable = true;
     mtr.enable = true;
     gnupg.agent = {
       enable = true;
@@ -175,18 +182,6 @@ in
       polkitPolicyOwners = [ "juuso" ];
     };
   };
-
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  system.copySystemConfiguration = true;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
