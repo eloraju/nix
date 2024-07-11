@@ -1,5 +1,5 @@
 {
-  description = "jänkhäs flakey flake";
+  description = "jänkhä's flakey flake";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";

@@ -155,6 +155,7 @@
     zsh
     xfce.thunar
     xbanish
+    xclip
     unzip
     libgcc
     gcc
