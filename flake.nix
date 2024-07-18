@@ -16,23 +16,6 @@
 
   outputs = inputs@{self, nixpkgs, nixpkgs-stable, ...}:
     let
-      # get a neewr version of awesomewm v4.3 is 4 years old...
-      awesome-git-overlay = final: prev : {
-        awesome = (prev.lib.removeAttrs 
-            (prev.awesome.overrideAttrs (old: {
-              version = "20240606-git";
-              src = prev.fetchFromGitHub {
-                owner = "awesomeWM";
-                repo = "awesome";
-                rev = "ad0290bc1aac3ec2391aa14784146a53ebf9d1f0";
-                sha256 = "uaskBbnX8NgxrprI4UbPfb5cRqdRsJZv0YXXshfsxFU=";
-              };
-            outputs = ["out"];
-            patches = [];
-          })) 
-          ["patches"]);
-        };
-
       pkgs = import nixpkgs {
         system = "x86_64-linux";
         config= {
@@ -41,21 +24,22 @@
         };
         overlays = [
           inputs.rust-overlay.overlays.default
-          awesome-git-overlay
         ];
       };
       lib = nixpkgs.lib;
     in
-  {
-    nixosConfigurations = {
-      carbon = lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [./configuration.nix];
-        specialArgs = {
-          inherit pkgs;
-          inherit inputs;
+      {
+      nixosConfigurations = {
+        carbon = lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = [
+            ./configuration.nix
+          ];
+          specialArgs = {
+            inherit pkgs;
+            inherit inputs;
+          };
         };
       };
     };
-  };
 }

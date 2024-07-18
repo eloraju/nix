@@ -7,6 +7,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./wm.nix
       #<home-manager/nixos>
     ];
 
@@ -70,17 +71,7 @@
           greeter.enable = true;
         };
       };
-
-      windowManager.awesome = {
-        enable = true;
-        luaModules = with pkgs.luaPackages; [
-          luarocks # package manager for lua modules
-          luadbi-mysql # bd-abstraction layer
-        ];
-      };
     };
-
-    displayManager.defaultSession = "none+awesome";
 
     # Fingerprint sensor
 #    fprintd = {
