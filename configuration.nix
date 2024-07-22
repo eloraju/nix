@@ -8,6 +8,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ./wm.nix
+      ./shell/zsh.nix
       #<home-manager/nixos>
     ];
 
@@ -56,6 +57,9 @@
 
     # Enable Upower
     upower.enable = true;
+
+    # Enable xbanish
+    xbanish.enable = true;
 
     # Enable and configure X11
     xserver = {
@@ -112,7 +116,6 @@
   users.users.juuso = {
     isNormalUser = true;
     extraGroups = [ 
-    # Enable ‘sudo’ for the user.
     "wheel"
     "docker"
     "networkmanager"
@@ -126,34 +129,37 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    _1password
+    _1password-gui
     alacritty
+    bat
     brave
+    btop
     curl
     docker
     eza
+    fd
     flameshot
+    fzf
+    gcc
     gh
     git
+    libgcc
     neovim
+    oh-my-posh
+    pavucontrol
+    rofi
     rofi
     starship
+    stow
     tmux
+    unzip
+    variety
     wget
-    _1password-gui
-    _1password
-    bat
-    btop
-    zsh
-    xfce.thunar
     xbanish
     xclip
-    unzip
-    libgcc
-    gcc
-    stow
-    fzf
-    fd
-    oh-my-posh
+    xfce.thunar
+    zsh
   ];
 
   users.defaultUserShell = pkgs.zsh;
